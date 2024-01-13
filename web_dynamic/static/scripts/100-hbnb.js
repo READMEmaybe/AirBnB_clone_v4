@@ -1,12 +1,31 @@
 $('document').ready(function () {
+  const checkedStates = {};
+  const checkedCities = {};
   const checkedAmenities = {};
   $('input[type=checkbox]').click(function () {
-    $('input[type=checkbox]:checked').each(function () {
+    $('.amenity_check:checked').each(function () {
       checkedAmenities[$(this).attr('data-id')] = $(this).attr('data-name');
     });
-    $('input[type=checkbox]:not(:checked)').each(function () {
+    $('.amenity_check:not(:checked)').each(function () {
       delete checkedAmenities[$(this).attr('data-id')];
     });
+    $('.state_check:checked').each(function () {
+      checkedStates[$(this).attr('data-id')] = $(this).attr('data-name');
+    });
+    $('.state_check:not(:checked)').each(function () {
+      delete checkedStates[$(this).attr('data-id')];
+    });
+    $('.city_check:checked').each(function () {
+      checkedCities[$(this).attr('data-id')] = $(this).attr('data-name');
+    });
+    $('.city_check:not(:checked)').each(function () {
+      delete checkedCities[$(this).attr('data-id')];
+    });
+    $('.locations h4').text(
+      Object.values(checkedStates).join(', ') +
+    (Object.values(checkedStates).length > 0 && Object.values(checkedCities).length > 0 ? ', ' : '') +
+    Object.values(checkedCities).join(', ')
+    );
     $('.amenities h4').text(Object.values(checkedAmenities).join(', '));
   });
   $.ajax({
@@ -40,13 +59,17 @@ $('document').ready(function () {
       url: 'http://0.0.0.0:5001/api/v1/places_search/',
       type: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      data: JSON.stringify({ amenities: Object.keys(checkedAmenities) }),
+      data: JSON.stringify({
+        states: Object.keys(checkedStates),
+        cities: Object.keys(checkedCities),
+        amenities: Object.keys(checkedAmenities)
+      }),
       success: function (data) {
         $('section.places').empty();
         for (const place of data) {
           const articleHtml = `
         <article>
-      <div class="title_box">
+        <div class="title_box">
           <h2>${place.name}</h2>
           <div class="price_by_night">$${place.price_by_night}</div>
         </div>
