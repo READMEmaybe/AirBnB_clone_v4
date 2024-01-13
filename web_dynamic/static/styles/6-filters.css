@@ -19,6 +19,7 @@ button {
     right: 30px;
 }
 button:hover {
+    cursor: pointer;
     opacity: 0.9;
 }
 .filters div {
@@ -105,4 +106,8 @@ button:hover {
 .amenities:hover .popover,
 .locations:hover .popover {
     visibility: visible;
+}
+
+input[type="checkbox"]:hover {
+    cursor: pointer;
 }

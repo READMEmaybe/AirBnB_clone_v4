@@ -50,18 +50,13 @@ $('document').ready(function () {
       <div class="description">
       ${place.description}
       </div>
-    <div class="reviews" id="${place.id}">
-    <h2>Reviews</h2></div>
+    <div class="reviews"><h2>
+      <span id="${place.id}n" class="treview">Reviews</span>
+      <span id="${place.id}" onclick="showReviews(this)">Show</span></h2>
+      <ul id="${place.id}r"></ul>
+      </div>
     </article>`;
         $('section.places').append(articleHtml);
-        console.log(place);
-        $.get(`http://0.0.0.0:5001/api/v1/places/${place.id}/reviews`, function (data) {
-          const reviewsList = $(`#${place.id}`);
-          for (const review of data) {
-            const reviewHtml = `<li>${review.text}</li>`;
-            reviewsList.append(reviewHtml)
-          }
-        });
       }
     }
   }, 'json');
@@ -93,18 +88,13 @@ $('document').ready(function () {
       <div class="description">
       ${place.description}
       </div>
-      <div class="reviews" id="${place.id}">
-      <h2>Reviews</h2>
+      <div class="reviews"><h2>
+      <span id="${place.id}n" class="treview">Reviews</span>
+      <span id="${place.id}" onclick="showReviews(this)">Show</span></h2>
+      <ul id="${place.id}r"></ul>
       </div>
       </article>`;
           $('section.places').append(articleHtml);
-          $.get(`http://0.0.0.0:5001/api/v1/places/${place.id}/reviews`, function (data) {
-          const reviewsList = $(`#${place.id}`);
-          for (const review of data) {
-            const reviewHtml = `<li>${review.text}</li>`;
-            reviewsList.append(reviewHtml)
-          }
-        });
         }
       }
     }, 'json');
@@ -118,3 +108,48 @@ $.get('http://0.0.0.0:5001/api/v1/status/', function (data) {
     $('#api_status').removeClass('available');
   }
 });
+
+function showReviews (obj) {
+  if (obj === undefined) {
+    return;
+  }
+  if (obj.textContent === 'Show') {
+    obj.textContent = 'Hide';
+    $.get(`http://0.0.0.0:5001/api/v1/places/${obj.id}/reviews`, (data, textStatus) => {
+      if (textStatus === 'success') {
+        $(`#${obj.id}n`).html(data.length + ' Reviews');
+        for (const review of data) {
+          printReview(review, obj);
+        }
+      }
+    });
+  } else {
+    obj.textContent = 'Show';
+    $(`#${obj.id}n`).html('Reviews');
+    $(`#${obj.id}r`).empty();
+  }
+}
+
+function printReview (review, obj) {
+  const date = new Date(review.created_at);
+  const month = date.toLocaleString('en', { month: 'long' });
+  const day = dateOrdinal(date.getDate());
+
+  if (review.user_id) {
+    $.get(`http://0.0.0.0:5001/api/v1/users/${review.user_id}`, (data, textStatus) => {
+      if (textStatus === 'success') {
+        $(`#${obj.id}r`).append(
+          `<li><h3>From ${data.first_name} ${data.last_name} the ${day + ' ' + month + ' ' + date.getFullYear()}</h3>
+          <p>${review.text}</p>
+          </li>`);
+      }
+    });
+  }
+}
+
+function dateOrdinal (dom) {
+  if (dom === 31 || dom === 21 || dom === 1) return dom + 'st';
+  else if (dom === 22 || dom === 2) return dom + 'nd';
+  else if (dom === 23 || dom === 3) return dom + 'rd';
+  else return dom + 'th';
+}

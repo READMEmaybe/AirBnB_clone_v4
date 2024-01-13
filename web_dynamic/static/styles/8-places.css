@@ -107,3 +107,19 @@
     width: 100%;
     border-bottom: solid #DDDDDD 1px;
 }
+
+.reviews span:last-child {
+    cursor: pointer;
+    font-weight: initial;
+    margin-left: auto;
+}
+.reviews ul {
+    list-style: none;
+    padding: 0;
+}
+.reviews ul li h3 {
+    font-size: 14px;
+}
+.treview {
+    font-weight: bold;
+}
