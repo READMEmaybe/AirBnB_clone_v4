@@ -99,3 +99,11 @@
 .user {
   margin-bottom: 1.5%;
 }
+
+.reviews h2 {
+    display: flex;
+    justify-content: inherit;
+    font-size: 16px;
+    width: 100%;
+    border-bottom: solid #DDDDDD 1px;
+}
